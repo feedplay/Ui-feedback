@@ -307,7 +307,7 @@ function App() {
                 Just fun prompts to play, experiment, and grow your design instincts. It's a safe space to learn, get inspired, and build confidence.
               </p>
               <p className="font-medium text-indigo-600">
-                Made By AI Designer.Made for UI Designers.
+                Made By AI Designer. Made for UI Designers.
               </p>
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45"></div>
             </div>
