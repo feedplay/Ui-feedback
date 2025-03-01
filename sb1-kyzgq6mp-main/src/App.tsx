@@ -11,22 +11,10 @@ function App() {
   const [isEmailSubmitted, setIsEmailSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const apiUrl = "https://script.google.com/macros/s/AKfycbyxKR-ZOlr44HreifzN2AGPlg9NQ_k-DVN7E4JlAACBd33gcZyAEZv2Rk9RyhQAeQ_m/exec";
-
-  // Add this temporarily at the top of your component to test
-  useEffect(() => {
-    try {
-      const testUrl = new URL("https://script.google.com/macros/s/AKfycbyxKR-ZOlr44HreifzN2AGPlg9NQ_k-DVN7E4JlAACBd33gcZyAEZv2Rk9RyhQAeQ_m/exec");
-      console.log("URL is valid:", testUrl.toString());
-    } catch (error) {
-      console.error("URL is invalid:", error);
-    }
-  }, []);
+  // Use proper API endpoint instead of direct MongoDB connection
+  const apiUrl = "http://localhost:5000/api/users";  // Use absolute URL during development
 
   useEffect(() => {
-    // Force clear localStorage to ensure popup shows
-    localStorage.removeItem('userEmail');
-    
     // Check if email exists in localStorage
     const storedEmail = localStorage.getItem('userEmail');
     if (storedEmail) {
@@ -58,36 +46,38 @@ function App() {
     setIsSubmitting(true);
     
     try {
-      console.log("Submitting to URL:", apiUrl); // Debug log
+      console.log("Submitting to API:", apiUrl);
       
-      // Send email to Google Sheets via Apps Script
-      // Using mode: 'no-cors' is essential for Google Apps Script
+      // Send email to backend API
       const response = await fetch(apiUrl, {
         method: 'POST',
-        mode: 'no-cors', // Important for CORS issues with Google Apps Script
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email,
-          timestamp: new Date().toISOString(),
+          email: email
         }),
       });
       
-      console.log("Response received:", response); // Debug log
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
       
-      // Note: With mode: 'no-cors', we can't access response properties
-      // So we assume success if we get here without an error
+      const data = await response.json();
       
-      // Store email in localStorage
-      localStorage.setItem('userEmail', email);
-      setIsEmailSubmitted(true);
-      setShowEmailPopup(false);
-      setEmailError('');
+      if (data.success) {
+        // Store email in localStorage
+        localStorage.setItem('userEmail', email);
+        setIsEmailSubmitted(true);
+        setShowEmailPopup(false);
+        setEmailError('');
+      } else {
+        setEmailError(data.error || 'Failed to submit email. Please try again.');
+      }
       
     } catch (error) {
       console.error('Error submitting email:', error);
-      setEmailError('Failed to submit email. Please try again.');
+      setEmailError('Network error. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -197,7 +187,7 @@ function App() {
     }
   };
 
-  // Force clear localStorage to ensure popup shows for testing
+  // Reset localStorage to ensure popup shows for testing
   const resetEmailStorage = () => {
     localStorage.removeItem('userEmail');
     setIsEmailSubmitted(false);
@@ -211,13 +201,13 @@ function App() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full animate-fade-in">
             <p className="text-gray-600 mb-6">
-           <b> Spark Some UI Feedback! ✨</b>
+              <b>Spark Some UI Feedback! ✨</b>
             </p>
             
             <form onSubmit={handleEmailSubmit}>
               <div className="mb-4">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Your Magic Email
+                  Your Magic Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -271,7 +261,7 @@ function App() {
         
         {!isEmailSubmitted && (
           <p className="text-sm text-amber-600 text-center">
-            
+            Please provide your email to unlock feedback generation
           </p>
         )}
         
@@ -341,7 +331,7 @@ function App() {
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center">
             <span className="text-gray-500 text-sm">
-              
+              © 2025 UI Feedback Generator
             </span>
           </div>
         </div>
