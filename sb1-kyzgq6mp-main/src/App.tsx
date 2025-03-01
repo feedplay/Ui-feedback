@@ -211,13 +211,13 @@ function App() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full animate-fade-in">
             <p className="text-gray-600 mb-6">
-              Enter your email to get started with personalized UI feedback suggestions.
+           <b> Spark Some UI Feedback! ✨</b>
             </p>
             
             <form onSubmit={handleEmailSubmit}>
               <div className="mb-4">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email address
+                Your Magic Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -246,11 +246,11 @@ function App() {
                 disabled={isSubmitting}
                 className={`w-full py-2 px-4 ${isSubmitting ? 'bg-indigo-400' : 'bg-indigo-500 hover:bg-indigo-600'} text-white font-medium rounded-lg transition-colors flex items-center justify-center`}
               >
-                {isSubmitting ? 'Submitting...' : 'Continue'}
+                {isSubmitting ? 'Submitting...' : "Let's Go"}
               </button>
               
               <p className="mt-4 text-xs text-gray-500 text-center">
-                We'll never share your email with anyone else.
+                We promise - No Spam, Just UI-Inspiration!
               </p>
             </form>
           </div>
@@ -271,7 +271,7 @@ function App() {
         
         {!isEmailSubmitted && (
           <p className="text-sm text-amber-600 text-center">
-            Please provide your email to unlock feedback generation
+            
           </p>
         )}
         
