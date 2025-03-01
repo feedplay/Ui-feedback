@@ -12,7 +12,7 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Use proper API endpoint instead of direct MongoDB connection
-  const apiUrl = "https://ui-feedback.onrender.com";  // Use absolute URL during development
+  const apiUrl = "https://ui-feedback.onrender.com/api/users";  // Use absolute URL during development
 
   useEffect(() => {
     // Check if email exists in localStorage
