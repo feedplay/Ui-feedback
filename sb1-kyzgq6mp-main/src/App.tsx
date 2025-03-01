@@ -187,12 +187,7 @@ function App() {
     }
   };
 
-  // Reset localStorage to ensure popup shows for testing
-  const resetEmailStorage = () => {
-    localStorage.removeItem('userEmail');
-    setIsEmailSubmitted(false);
-    setShowEmailPopup(true);
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -287,14 +282,7 @@ function App() {
             Feedback copied to clipboard!
           </div>
         )}
-        
-        {/* Testing button - visible for debugging */}
-        <button 
-          onClick={resetEmailStorage}
-          className="text-xs text-gray-400 hover:text-gray-500 text-center w-full"
-        >
-          Reset Email (Testing Only)
-        </button>
+
       </div>
       
       <div className="mt-8 text-center">
