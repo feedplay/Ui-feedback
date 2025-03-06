@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Sparkles, HelpCircle, Mail } from 'lucide-react';
+import { Mosaic } from 'react-loading-indicators';
 
 function App() {
   const [feedback, setFeedback] = useState<string>('');
@@ -11,16 +12,13 @@ function App() {
   const [isEmailSubmitted, setIsEmailSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Use proper API endpoint instead of direct MongoDB connection
-  const apiUrl = "https://ui-feedback.onrender.com/api/users";  // Use absolute URL during development
+  const apiUrl = "https://ui-feedback.onrender.com/api/users";
 
   useEffect(() => {
-    // Check if email exists in localStorage
     const storedEmail = localStorage.getItem('userEmail');
     if (storedEmail) {
       setIsEmailSubmitted(true);
     } else {
-      // Show popup immediately
       setShowEmailPopup(true);
     }
   }, []);
@@ -46,38 +44,30 @@ function App() {
     setIsSubmitting(true);
     
     try {
-      console.log("Submitting to API:", apiUrl);
-      
-      // Send email to backend API
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: email
-        }),
+        body: JSON.stringify({ email }),
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       
       const data = await response.json();
       
       if (data.success) {
-        // Store email in localStorage
         localStorage.setItem('userEmail', email);
         setIsEmailSubmitted(true);
         setShowEmailPopup(false);
         setEmailError('');
       } else {
-        setEmailError(data.error || 'Failed to submit email. Please try again.');
+        setEmailError(data.error || 'Submission failed. Please try again.');
       }
       
     } catch (error) {
       console.error('Error submitting email:', error);
-      setEmailError('Network error. Please check your connection and try again.');
+      setEmailError('Network error. Please check your connection.');
     } finally {
       setIsSubmitting(false);
     }
@@ -181,17 +171,12 @@ function App() {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-        });
+        .catch(console.error);
     }
   };
 
-  
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      {/* Email Popup */}
       {showEmailPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full animate-fade-in">
@@ -229,9 +214,22 @@ function App() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full py-2 px-4 ${isSubmitting ? 'bg-indigo-400' : 'bg-indigo-500 hover:bg-indigo-600'} text-white font-medium rounded-lg transition-colors flex items-center justify-center`}
+                className={`w-full py-2 px-4 ${
+                  isSubmitting ? 'bg-indigo-400' : 'bg-indigo-500 hover:bg-indigo-600'
+                } text-white font-medium rounded-lg transition-colors flex items-center justify-center`}
               >
-                {isSubmitting ? 'Submitting...' : "Let's Go"}
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <Mosaic 
+                      color="#ffffff" 
+                      size={20}
+                      className="mr-2"
+                    />
+                    Submitting...
+                  </div>
+                ) : (
+                  "Let's Go"
+                )}
               </button>
               
               <p className="mt-4 text-xs text-gray-500 text-center">
@@ -241,14 +239,16 @@ function App() {
           </div>
         </div>
       )}
-      
+
       <div className="max-w-md w-full bg-white rounded-xl shadow-sm p-8 space-y-6 mt-16 pt-8">
         <h1 className="text-2xl font-semibold text-center text-gray-800">UI Feedback Generator</h1>
         
         <button 
           onClick={generateFeedback}
           disabled={!isEmailSubmitted}
-          className={`w-full py-3 px-4 ${isEmailSubmitted ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-indigo-300 cursor-not-allowed'} text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2`}
+          className={`w-full py-3 px-4 ${
+            isEmailSubmitted ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-indigo-300 cursor-not-allowed'
+          } text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2`}
         >
           <Sparkles size={20} />
           Generate UI Feedback
@@ -271,7 +271,9 @@ function App() {
         <button 
           onClick={copyToClipboard}
           disabled={!feedback || !isEmailSubmitted}
-          className={`w-full py-2 px-4 ${feedback && isEmailSubmitted ? 'bg-gray-800 hover:bg-gray-900' : 'bg-gray-300 cursor-not-allowed'} text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2`}
+          className={`w-full py-2 px-4 ${
+            feedback && isEmailSubmitted ? 'bg-gray-800 hover:bg-gray-900' : 'bg-gray-300 cursor-not-allowed'
+          } text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2`}
         >
           <Copy size={18} />
           {copied ? 'Copied!' : 'Copy Feedback'}
@@ -282,7 +284,6 @@ function App() {
             Feedback copied to clipboard!
           </div>
         )}
-
       </div>
       
       <div className="mt-8 text-center">
